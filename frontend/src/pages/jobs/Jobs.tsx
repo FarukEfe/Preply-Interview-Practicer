@@ -3,6 +3,10 @@ import { getJobsFilter } from '../../api/rapid.ts'; // Assuming you have an API 
 import { authStore } from '../../lib/authStore.ts';
 
 import { Loader } from 'lucide-react';
+import { Button } from "../../components/ui/button"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+import { StaticJobsView } from "./JobsStatic.tsx"
+import { ApiJobsView } from "./JobsAPI.tsx"
 
 // Define default values for query filters. Allow user to change, and use the interface provided in rapid.ts
 
@@ -46,7 +50,42 @@ const Jobs = () => {
   }
 
   return (
-    <div>Jobs</div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">Job Postings</h1>
+          <p className="text-gray-600 mt-2">Find your next opportunity</p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <Tabs defaultValue="static" className="space-y-6">
+          <div className="flex justify-between items-center">
+            <TabsList className="grid w-fit grid-cols-2">
+              <TabsTrigger value="static">Static Templates</TabsTrigger>
+              <TabsTrigger value="api">API Job Postings</TabsTrigger>
+            </TabsList>
+
+            <div className="flex gap-2">
+              <Button variant="outline">
+                Refresh Jobs
+              </Button>
+              <Button>Post a Job</Button>
+            </div>
+          </div>
+
+          <TabsContent value="static">
+            <StaticJobsView />
+          </TabsContent>
+
+          <TabsContent value="api">
+            <ApiJobsView />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
   )
 }
 

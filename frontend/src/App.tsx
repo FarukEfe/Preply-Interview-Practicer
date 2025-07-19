@@ -37,8 +37,8 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/jobs" element={(authUser) ? <Jobs /> : <Navigate to="/signin" />} />
-        {/* <Route path="/jobs" element={<Jobs />} /> */}
+        {/* <Route path="/jobs" element={(authUser) ? <Jobs /> : <Navigate to="/signin" />} /> */}
+        <Route path="/jobs" element={<Jobs />} />
         <Route path="/dashboard" element={(authUser) ? <Dashboard /> : <Navigate to="/signin" />} />
         <Route path="/signin" element={(authUser) ? <Navigate to="/dashboard" /> : <SignIn />} />
         <Route path="/signup" element={(authUser) ? <Navigate to="/dashboard" /> : <SignUp />} />
