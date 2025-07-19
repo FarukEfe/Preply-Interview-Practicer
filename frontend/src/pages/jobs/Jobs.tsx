@@ -64,7 +64,7 @@ const Jobs = () => {
           createTemplate={(job: JobInterface) => {
             // make the backend call to create a job template (including user id to pair with)
             console.log("Creating template for job id:", job.job_id);
-            createTemplate(job, authStore.getState().authUser?.id).then(response => {
+            createTemplate(job, authStore.getState().authUser?._id).then(response => {
               if (response) {
                 console.log("Template created successfully:", response);
                 // Optionally, you can show a success message or update the UI

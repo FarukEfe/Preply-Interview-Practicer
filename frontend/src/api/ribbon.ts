@@ -28,6 +28,7 @@ export const createTemplate = async (job: JobInterface, userId: string) => {
 
 export const getTemplates = async (userId: string) => {
     try {
+        console.log("Fetching templates for user:", userId);
         const response = await backend.get(`/ribbon/flows?userId=${userId}`);
         if (response.status !== 200) {
             console.error("Error fetching templates:", response.status);

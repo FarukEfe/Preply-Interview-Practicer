@@ -58,7 +58,6 @@ export const createFlow = async (req, res) => {
     // Inside your createFlow function:
     const questions = await desc_to_questions(description);
 
-
     const data = {
         org_name: oname,
         title: title,
@@ -68,8 +67,9 @@ export const createFlow = async (req, res) => {
         is_video_enabled: true,
     }
     try {
-        console.log("hit me lol")
+        console.log("h1")
         const result = await axios.post(url, data, options);
+        console.log("h2")
         console.log(result.statusText)
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
@@ -97,7 +97,7 @@ export const createFlow = async (req, res) => {
             data: result.data,
         });
     } catch (err) {
-        console.error('Error making interview flow:', err);
+        console.error('Error making interview flow:', err.message);
         res.status(500).json({ message: 'Failed to create interview flow.', error: err.message });
         return;
     }
