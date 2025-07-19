@@ -1,9 +1,31 @@
 import axios from 'axios';
 
-// Populate the QueryInterface and use it as query filter input to getJobsFilter
+export interface JobInterface {
+        employer_name: string;
+        employer_website: string;
+        job_title: string;
+        job_employment_type: string;
+        job_is_remote: boolean;
+        job_posted_at_datetime_utc: string;
+        description: string;
+        job_location: string;
+        job_country: string;
+        job_description: string; // Optional field
+        job_id: string; // Optional field
+}
 
-export const QueryInterface = {
-
+export interface QueryInterface {
+    parameters: {
+        country: string;
+        date_posted: string;
+        language: String,
+        num_pages: Number,
+        page: Number,
+        query: String
+    },
+    request_id: string;
+    status: string;
+    data: JobInterface[]
 }
 
 export const getJobsFilter = async () => {
@@ -24,7 +46,7 @@ export const getJobsFilter = async () => {
             }
         };
 
-        const response = await axios.request(options);
+        const response = await axios.request<QueryInterface>(options);
 
         if (response.status !== 200) {
             console.log("Error fetching job postings:", response.status);

@@ -1,22 +1,10 @@
 "use client"
 
+import type { JobInterface } from "../../api/rapid"
 import { Badge } from "../../components/ui/badge"
 import { Button } from "../../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
 import { MapPin, Clock, Building2, ExternalLink, Globe } from "lucide-react"
-
-export interface JobData {
-  id: number
-  employer_name: string
-  employer_website: string
-  job_title: string
-  job_employment_type: string
-  job_is_remote: boolean
-  job_posted_at_datetime_utc: string
-  description: string
-  job_location: string
-  job_country: string
-}
 
 // Helper function to format employment type
 function formatEmploymentType(type: string) {
@@ -45,19 +33,12 @@ function formatPostedDate(dateString: string) {
 }
 
 interface JobCardProps {
-  job: JobData
+  job: JobInterface
   onApply?: (jobId: number) => void
   onSave?: (jobId: number) => void
 }
 
-export function JobCard({ job, onApply, onSave }: JobCardProps) {
-  const handleApply = () => {
-    onApply?.(job.id)
-  }
-
-  const handleSave = () => {
-    onSave?.(job.id)
-  }
+export function JobCard({ job }: JobCardProps) {
 
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
@@ -109,11 +90,8 @@ export function JobCard({ job, onApply, onSave }: JobCardProps) {
         </div>
 
         <div className="flex gap-2 pt-2">
-          <Button className="flex-1" onClick={handleApply}>
-            Apply Now
-          </Button>
-          <Button variant="outline" onClick={handleSave}>
-            Save Job
+          <Button variant="outline" onClick={() => {}}>
+            Create Template
           </Button>
         </div>
       </CardContent>

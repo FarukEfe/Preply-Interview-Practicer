@@ -81,7 +81,7 @@ const Jobs = () => {
           </TabsContent>
 
           <TabsContent value="api">
-            <ApiJobsView />
+            <ApiJobsView data={data} />
           </TabsContent>
         </Tabs>
       </div>

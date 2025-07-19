@@ -1,47 +1,20 @@
 import { useState } from "react"
 import { Badge } from "../../components/ui/badge"
 import { Card, CardContent, CardHeader } from "../../components/ui/card"
-import { JobCard, type JobData } from "./JobCard"
+import { JobCard } from "./JobCard"
 
-// Mock API job data
-const apiJobs: JobData[] = [
-  {
-    id: 101,
-    employer_name: "CloudFirst",
-    employer_website: "https://cloudfirst.dev",
-    job_title: "DevOps Engineer",
-    job_employment_type: "FULLTIME",
-    job_is_remote: true,
-    job_posted_at_datetime_utc: "2024-01-17T08:00:00Z",
-    description:
-      "Manage cloud infrastructure and deployment pipelines. You'll be responsible for maintaining our Kubernetes clusters, implementing CI/CD processes, and ensuring system reliability and scalability.",
-    job_location: "Seattle, WA",
-    job_country: "US",
-  },
-  {
-    id: 102,
-    employer_name: "AI Innovations",
-    employer_website: "https://ai-innovations.com",
-    job_title: "Data Scientist",
-    job_employment_type: "PARTTIME",
-    job_is_remote: false,
-    job_posted_at_datetime_utc: "2024-01-17T12:30:00Z",
-    description:
-      "Analyze complex datasets and build machine learning models to drive business insights. You'll work with large-scale data processing, statistical analysis, and collaborate with cross-functional teams.",
-    job_location: "Boston, MA",
-    job_country: "US",
-  },
-]
+import type { QueryInterface, JobInterface } from "../../api/rapid"
 
 interface ApiJobsViewProps {
+  data: QueryInterface
   onApply?: (jobId: number) => void
   onSave?: (jobId: number) => void
   onRefresh?: () => void
 }
 
-export function ApiJobsView({ onApply, onSave, onRefresh }: ApiJobsViewProps) {
+export function ApiJobsView({ data, onApply, onSave, onRefresh }: ApiJobsViewProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [jobs, setJobs] = useState<JobData[]>(apiJobs)
+  const [job_data, setJobData] = useState<QueryInterface>(data)
 
   const handleRefresh = async () => {
     setIsLoading(true)
@@ -68,7 +41,7 @@ export function ApiJobsView({ onApply, onSave, onRefresh }: ApiJobsViewProps) {
         <h2 className="text-xl font-semibold">Live Job Postings</h2>
         <div className="flex items-center gap-2">
           {isLoading && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>}
-          <Badge variant="secondary">{jobs.length} jobs</Badge>
+          <Badge variant="secondary">{job_data.data.length} jobs</Badge>
         </div>
       </div>
 
@@ -95,8 +68,8 @@ export function ApiJobsView({ onApply, onSave, onRefresh }: ApiJobsViewProps) {
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-          {jobs.map((job) => (
-            <JobCard key={job.id} job={job} onApply={onApply} onSave={onSave} />
+          {job_data.data.map((job: JobInterface) => (
+            <JobCard key={job.job_id} job={job} />
           ))}
         </div>
       )}
