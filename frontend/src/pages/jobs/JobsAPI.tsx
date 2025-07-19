@@ -7,12 +7,11 @@ import type { QueryInterface, JobInterface } from "../../api/rapid"
 
 interface ApiJobsViewProps {
   data: QueryInterface
-  onApply?: (jobId: number) => void
-  onSave?: (jobId: number) => void
+  selectJob: (job: JobInterface) => void
   onRefresh?: () => void
 }
 
-export function ApiJobsView({ data, onApply, onSave, onRefresh }: ApiJobsViewProps) {
+export function ApiJobsView({ data, selectJob, onRefresh }: ApiJobsViewProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [job_data, setJobData] = useState<QueryInterface>(data)
 
@@ -69,7 +68,7 @@ export function ApiJobsView({ data, onApply, onSave, onRefresh }: ApiJobsViewPro
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
           {job_data.data.map((job: JobInterface) => (
-            <JobCard key={job.job_id} job={job} />
+            <JobCard key={job.job_id} job={job} selectJob={() => { selectJob(job) }} />
           ))}
         </div>
       )}

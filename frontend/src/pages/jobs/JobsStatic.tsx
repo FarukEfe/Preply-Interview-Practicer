@@ -59,7 +59,7 @@ const staticJobs: JobInterface[] = [
 ];
 
 
-export function StaticJobsView() {
+export function StaticJobsView({ selectJob }: { selectJob: (job: JobInterface) => void }) {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -69,7 +69,7 @@ export function StaticJobsView() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
         {staticJobs.map((job) => (
-          <JobCard key={job.job_id} job={job} />
+          <JobCard key={job.job_id} job={job} selectJob={() => { selectJob(job); }} />
         ))}
       </div>
     </div>

@@ -34,14 +34,15 @@ function formatPostedDate(dateString: string) {
 
 interface JobCardProps {
   job: JobInterface
-  onApply?: (jobId: number) => void
-  onSave?: (jobId: number) => void
+  selectJob: (job: JobInterface) => void
 }
 
-export function JobCard({ job }: JobCardProps) {
+export function JobCard({ job, selectJob }: JobCardProps) {
 
   return (
-    <Card className="hover:shadow-lg transition-shadow duration-200">
+    <Card onClick={() => {
+        selectJob(job)
+    }} className="hover:shadow-lg transition-shadow duration-200">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div className="space-y-1">
@@ -90,8 +91,8 @@ export function JobCard({ job }: JobCardProps) {
         </div>
 
         <div className="flex gap-2 pt-2">
-          <Button variant="outline" onClick={() => {}}>
-            Create Template
+          <Button variant="outline" onClick={() => {  }}>
+            View Job
           </Button>
         </div>
       </CardContent>

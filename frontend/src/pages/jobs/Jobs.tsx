@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { getJobsFilter } from '../../api/rapid.ts'; // Assuming you have an API function to fetch jobs
+import { getJobsFilter, type JobInterface } from '../../api/rapid.ts'; // Assuming you have an API function to fetch jobs
 import { authStore } from '../../lib/authStore.ts';
 
 import { Loader } from 'lucide-react';
 import { Button } from "../../components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+
 import { StaticJobsView } from "./JobsStatic.tsx"
 import { ApiJobsView } from "./JobsAPI.tsx"
+import { JobDetailsModal } from './JobModal.tsx';
 
 // Define default values for query filters. Allow user to change, and use the interface provided in rapid.ts
 
@@ -15,6 +17,7 @@ const Jobs = () => {
   const isLoadingJobs = authStore(state => state.isLoadingJobs);
 
   const [data, setData] = useState<any>(null);
+  const [job, setJob] = useState<JobInterface | null>(null);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -50,7 +53,20 @@ const Jobs = () => {
   }
 
   return (
+    // Display the job details modal if a job is selected
     <div className="min-h-screen bg-gray-50">
+      {/* Modal */}
+      {job && (
+        <JobDetailsModal
+          job={job}
+          isOpen={!!job}
+          createTemplate={(job: JobInterface) => {
+            // make the backend call to create a job template (including user id to pair with)
+            console.log("Creating template for job id:", job.job_id);
+          }}
+          onClose={() => setJob(null)}
+        />
+      )}
       {/* Header */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-6">
@@ -77,11 +93,11 @@ const Jobs = () => {
           </div>
 
           <TabsContent value="static">
-            <StaticJobsView />
+            <StaticJobsView selectJob={setJob} />
           </TabsContent>
 
           <TabsContent value="api">
-            <ApiJobsView data={data} />
+            <ApiJobsView data={data} selectJob={setJob} />
           </TabsContent>
         </Tabs>
       </div>
