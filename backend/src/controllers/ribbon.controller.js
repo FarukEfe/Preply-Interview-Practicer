@@ -1,6 +1,8 @@
 import axios from 'axios';
 import Flow from '../models/ribbon/flow.model.js';
 import Interview from '../models/ribbon/interview.model.js';
+import { desc_to_questions } from '../lib/questions.js';
+
 
 const options = {
     headers: {
@@ -53,7 +55,9 @@ export const createFlow = async (req, res) => {
     // Question is static, this is where you'll generate the list of questions based on job description
     // 'description' is a body parameter from the api POST request
     // just add it here don't worry about the rest of the code
-    const questions = ["Why do you work here?"]
+    // Inside your createFlow function:
+    const questions = await desc_to_questions(description);
+
 
     const data = {
         org_name: oname,
