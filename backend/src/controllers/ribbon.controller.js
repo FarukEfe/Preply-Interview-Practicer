@@ -39,7 +39,13 @@ export const createInterview = async (req, res) => {
 
 export const createFlow = async (req, res) => {
 
-    const { oname, title, description, userId } = req.body;
+    const { oname, title, description } = req.body;
+    const { userId } = req.query; // api/flows?userId=123
+
+    if (!oname || !title || !description || !userId) {
+        res.status(400).json({ message: 'Organization name, title, description, and user ID are required.' });
+        return;
+    }
 
     // Request info
     const url = 'https://app.ribbon.ai/be-api/v1/interview-flows';
@@ -57,11 +63,11 @@ export const createFlow = async (req, res) => {
         is_phone_call_enabled: false,
         is_video_enabled: true,
     }
-    
     try {
+        console.log("hit me lol")
         const result = await axios.post(url, data, options);
-    
-        if (result.status !== 200 || !result.data) {
+        console.log(result.statusText)
+        if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
             res.status(500).json({ message: 'Failed to create interview flow. Ribbon call unsuccessful.' });
             return;
@@ -82,12 +88,13 @@ export const createFlow = async (req, res) => {
         newFlow.save();
 
         // Send json response
-        res.status(200).json({
+        res.status(201).json({
             message: "Interview flow created successfully.",
             data: result.data,
         });
     } catch (err) {
         console.error('Error making interview flow:', err);
+        res.status(500).json({ message: 'Failed to create interview flow.', error: err.message });
         return;
     }
 }

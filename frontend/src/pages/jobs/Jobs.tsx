@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/ta
 import { StaticJobsView } from "./JobsStatic.tsx"
 import { ApiJobsView } from "./JobsAPI.tsx"
 import { JobDetailsModal } from './JobModal.tsx';
+import { createTemplate } from '../../api/ribbon.ts';
 
 // Define default values for query filters. Allow user to change, and use the interface provided in rapid.ts
 
@@ -63,6 +64,18 @@ const Jobs = () => {
           createTemplate={(job: JobInterface) => {
             // make the backend call to create a job template (including user id to pair with)
             console.log("Creating template for job id:", job.job_id);
+            createTemplate(job, authStore.getState().authUser?.id).then(response => {
+              if (response) {
+                console.log("Template created successfully:", response);
+                // Optionally, you can show a success message or update the UI
+                // Show success popup, with button that navigates the user to created flows (from there to create templates)
+              } else {
+                console.error("Failed to create template");
+              }
+            }).catch(error => {
+              console.error("Error creating template:", error);
+            }
+            )
           }}
           onClose={() => setJob(null)}
         />
