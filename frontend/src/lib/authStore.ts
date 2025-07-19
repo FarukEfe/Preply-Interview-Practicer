@@ -16,7 +16,7 @@ export interface AuthState {
 export const authStore = create<AuthState>((set) => ({
     // Classic
     authUser: null,
-    isSigningIn: false,
+    isSigningIn: true,
     isSigningUp: false,
     // Pre-interview
     isCreatingFlow: false,

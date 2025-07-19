@@ -22,13 +22,13 @@ const App = () => {
   useEffect(() => {
     // Fetch initial data here
     console.log('Fetching initial data...');
-    
+    authStore.setState({ isSigningIn: false });
   }, [])
 
   // Debug
   // useEffect(() => { console.log(res); }, [res])
 
-  if (!res) {
+  if (authStore.getState().isSigningIn) {
     return (
       <div className="flex items-center justify-center h-screen">
           <Loader className="animate-spin w-12 h-12 text-blue-500" />
