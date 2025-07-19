@@ -8,7 +8,11 @@ const interviewSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true,
-    }
+    },
+    flowId: {
+        type: String,
+        required: true,
+    },
 }, { timestamps: true });
 
 const Interview = mongoose.model("Interview", interviewSchema);

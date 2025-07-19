@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 
 import { InterviewTemplateList } from './interview/InteriewTemplateList'
 import type { InterviewTemplate } from './interview/InteriewTemplateList'
 import { backend } from '../lib/axios'
-import { getTemplates } from '../api/ribbon'
+import { createInterview, getTemplates } from '../api/ribbon'
 import { authStore } from '../lib/authStore'
 import { Loader } from 'lucide-react'
+
+import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
 
   const [templates, setTemplates] = useState<InterviewTemplate[] | null>([])
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -65,7 +69,25 @@ const Dashboard = () => {
               onEdit={(template) => console.log('Edit template:', template)}
               onCopy={(template) => console.log('Copy template:', template)}
               onDelete={(templateId) => console.log('Delete template with ID:', templateId)}
-              onUse={(template) => console.log('Use template:', template)}
+              onUse={(template) => {
+                authStore.setState({ isCreatingInterview: true });
+                // console.log(template)
+                createInterview(template.interview_flow_id, authStore.getState().authUser?._id).then(response => {
+                  if (response) {
+                    console.log("Interview created successfully:", response);
+                    // Optionally, you can show a success message or update the UI
+                    // Show success popup, with button that navigates the user to created flows (from there to create templates)
+                    console.log(response.data.data.interview_link)
+                    window.open(response.data.data.interview_link, "_blank"); // Redirect to interview link
+                    navigate('/jobs'); // Redirect to dashboard after creating interview
+                  } else {
+                    console.error("Failed to create interview");
+                  }
+                }).catch(error => {
+                  console.error("Error creating interview:", error);
+                })
+                authStore.setState({ isCreatingInterview: false });
+              }}
               onCreateNew={() => console.log('Create new template')}
             />
           )

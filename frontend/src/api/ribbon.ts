@@ -44,3 +44,34 @@ export const getTemplates = async (userId: string) => {
         return null;
     }
 }
+
+export const createInterview = async (flowId: string, userId: string) => {
+    try {
+
+        console.log("Creating interview for flow:", flowId, "and user:", userId);
+
+        if (!flowId || !userId) {
+            console.error("Flow ID or User ID is missing");
+            return null;
+        }
+
+        const body = {
+            interviewId: flowId,
+            userId
+        };
+
+        const response = await backend.post(`/ribbon/createinterview`, body);
+        if (response.status !== 201) {
+            console.error("Error creating interview:", response.status);
+            return null;
+        }
+
+        return {
+            message: "Interview created successfully",
+            data: response.data
+        };
+    } catch (err) {
+        console.error("Error creating interview:", err);
+        return null;
+    }
+}

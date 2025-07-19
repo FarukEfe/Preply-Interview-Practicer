@@ -16,24 +16,40 @@ const options = {
 // MARK: POST
 export const createInterview = async (req, res) => {
 
-    const { interviewId, userId } = req.body;
-
-    const url = 'https://app.ribbon.ai/be-api/v1/interviews';
-
-    const data = {
-        interview_flow_id: interviewId
-    }
-
     try {
+        const { interviewId, userId } = req.body;
+
+        if (!interviewId || !userId) {
+            res.status(400).json({ message: 'Interview ID and User ID are required.' });
+            return;
+        }
+
+        const url = 'https://app.ribbon.ai/be-api/v1/interviews';
+
+        const data = {
+            interview_flow_id: interviewId
+        }
+
         const result = await axios.post(url, data, options);
+
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
             res.status(500).json({ message: 'Failed to create interview. Ribbon call unsuccessful.' });
             return;
         }
-        return res.data;
+
+        const newInterview = new Interview({
+            userId: userId,
+            interviewId: result.data.interview_id,
+            flowId: interviewId, // Store the associated flow ID
+        });
+
+        res.status(201).json({
+            message: "Interview created successfully.",
+            data: result.data,
+        });
     } catch (err) {
-        console.error('Error making interview:', err);
+        console.error('Error making interview:', err.message);
         res.status(500).json({ message: 'Failed to create interview.', error: err.message });
         return;
     }

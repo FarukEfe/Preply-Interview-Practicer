@@ -55,13 +55,14 @@ interface InterviewTemplateItemProps {
   onEdit?: (template: InterviewTemplate) => void
   onCopy?: (template: InterviewTemplate) => void
   onDelete?: (templateId: string) => void
-  onUse?: (template: InterviewTemplate) => void
+  onUse: (template: InterviewTemplate) => void
   showQuestions?: boolean
 }
 
 function InterviewTemplateItem({
   template,
   showQuestions = false,
+  onUse,
 }: InterviewTemplateItemProps) {
   const [isQuestionsExpanded, setIsQuestionsExpanded] = useState(showQuestions)
 
@@ -89,6 +90,8 @@ function InterviewTemplateItem({
             <Button size="sm" onClick={() => {
               // Create interview instance to backend
               // Navigate user to interview in a new window
+              console.log(template);
+              onUse(template);
             }}>
               Start Interview
             </Button>
@@ -159,7 +162,7 @@ interface InterviewTemplateListProps {
   onEdit?: (template: InterviewTemplate) => void
   onCopy?: (template: InterviewTemplate) => void
   onDelete?: (templateId: string) => void
-  onUse?: (template: InterviewTemplate) => void
+  onUse: (template: InterviewTemplate) => void
   onCreateNew?: () => void
   title?: string
 }
