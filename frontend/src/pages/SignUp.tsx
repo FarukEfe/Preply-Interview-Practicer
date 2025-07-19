@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 // Components
 import { Button } from "../components/ui/button"
@@ -17,6 +18,8 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const navigate = useNavigate();
+  const signOut = authStore(state => state.signOut);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -70,16 +73,15 @@ const SignUp = () => {
                   if (response) {
                     console.log("Sign up successful:", response);
                     authStore.setState({ authUser: response.data });
-                    console.log(authStore.getState().authUser);
                     // Redirect to dashboard
-                    window.location.href = '/dashboard';
+                    navigate('/dashboard');
                   } else {
                     console.error("Sign up failed");
+                    signOut(); // Clear any stale auth data
                   }
                 }).catch(error => {
                   console.error("Error during sign up:", error);
-                  // Maybe have error feedback instead of this
-                  window.location.href = '/signup'; // Redirect to sign up on error
+                  signOut(); // Clear any stale auth data
                 })
               }
             }>

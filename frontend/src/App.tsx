@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Loader } from 'lucide-react';
 // Auth
@@ -16,25 +16,21 @@ const App = () => {
   
   // auth store
   const authUser = authStore(state => state.authUser);
-
-  const [res, setRes] = useState<any>(null);
+  const isCheckingAuth = authStore(state => state.isCheckingAuth);
+  const checkAuth = authStore(state => state.checkAuth);
 
   useEffect(() => {
-    // Fetch initial data here
-    console.log('Fetching initial data...');
-    authStore.setState({ isSigningIn: false });
-  }, [])
+    // Check authentication status when app loads
+    checkAuth();
+  }, [checkAuth])
 
-  // Debug
-  // useEffect(() => { console.log(res); }, [res])
-
-  // if (authStore.getState().isSigningIn) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //         <Loader className="animate-spin w-12 h-12 text-blue-500" />
-  //     </div>
-  //   )
-  // }
+  if (isCheckingAuth) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+          <Loader className="animate-spin w-12 h-12 text-blue-500" />
+      </div>
+    )
+  }
 
   return (
     <div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
@@ -11,6 +12,8 @@ export default function SignInPage() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const signOut = authStore(state => state.signOut);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -40,24 +43,20 @@ export default function SignInPage() {
             <Button type="submit" className="w-full" onClick={(e) => {
                 e.preventDefault();
                 // Handle sign in logic here
-                // console.log("Sign in with email:", email);
-                // Call your sign-in API here
                 userSignIn(email, password).then(response => {
                   if (response) {
                     console.log("Sign in successful:", response);
                     // Set user in auth store
                     authStore.setState({ authUser: response.data });
-                    // Debug
-                    // console.log(authStore.getState().authUser);
                     // Redirect to dashboard
-                    window.location.href = '/dashboard';
+                    navigate('/dashboard');
                   } else {
                     console.error("Sign in failed");
+                    signOut(); // Clear any stale auth data
                   }
                 }).catch(error => {
                   console.error("Error during sign in:", error);
-                  // Maybe have error feedback instead of this
-                  window.location.href = '/signin'; // Redirect to sign in on error
+                  signOut(); // Clear any stale auth data
                 })
               }
             }>
