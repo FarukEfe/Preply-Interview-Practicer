@@ -39,10 +39,23 @@ export const signUp = async (req, res) => {
     try {
         const { fullname, username, password, email } = req.body;
 
+        // Validate input
+        if (!fullname || !username || !password || !email) {
+            res.status(400).json({ message: 'All fields are required.' });
+            return;
+        }
+
+        // Check if password is valid (only has to be 8 letters)
+        if (password.length < 8) {
+            res.status(400).json({ message: 'Password must be at least 8 characters long.' });
+            return;
+        }
+        
         // Check if user already exists
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
-            return res.status(400).json({ message: 'User already exists.' });
+            res.status(400).json({ message: 'User already exists.' });
+            return;
         }
 
         // TwelveLabs index ID generation
@@ -56,10 +69,6 @@ export const signUp = async (req, res) => {
             ],
             addons: ["thumbnail"],
         });
-
-        if (password.length < 8) {
-            return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
-        }
 
         // Hash the password before saving
         const salt = await bcrypt.genSalt(10);

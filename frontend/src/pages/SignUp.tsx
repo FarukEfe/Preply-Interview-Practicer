@@ -6,6 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../co
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 
+// SignUp
+import { userSignUp } from '../api/user'
+import { authStore } from '../lib/authStore'
+
 const SignUp = () => {
 
   const [fullname, setFullname] = useState('');
@@ -62,13 +66,16 @@ const SignUp = () => {
               (e) => {
                 e.preventDefault();
                 // Handle sign up logic here
-                console.log({
-                  fullname,
-                  username,
-                  email,
-                  password,
-                  confirmPassword
-                });
+                userSignUp(email, password, fullname, username).then(response => {
+                  if (response) {
+                    console.log("Sign up successful:", response);
+                    authStore.setState({ authUser: response.data });
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                  } else {
+                    console.error("Sign up failed");
+                  }
+                })
               }
             }>
               Create Account
