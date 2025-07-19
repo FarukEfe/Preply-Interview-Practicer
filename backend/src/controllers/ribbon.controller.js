@@ -114,6 +114,7 @@ export const getFlows = async (req, res) => {
         // Find all flows in mongodb for the user
         const flows = await Flow.find({ userId: userId });
 
+        // Fetch flows from Ribbon API
         const result = await axios.get(url, options);
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
@@ -126,9 +127,20 @@ export const getFlows = async (req, res) => {
             flows.some(dbFlow => dbFlow.flowId === flow.interview_flow_id)
         );
 
+        const combinedFlows = userFlows.map(ribbonFlow => {
+            const dbFlow = flows.find(dbFlow => dbFlow.flowId === ribbonFlow.interview_flow_id);
+            return {
+                ...ribbonFlow,
+                userId: dbFlow.userId,
+                interviews: dbFlow.interviews,
+                createdAt: dbFlow.createdAt,
+                // flowId: dbFlow.flowId, // Already in ribbonFlow but just in case
+            }
+        })
+
         res.status(200).json({
             message: "Interview flows retrieved successfully.",
-            data: userFlows,
+            data: combinedFlows,
         });
 
     } catch (err) {
@@ -164,10 +176,22 @@ export const getInterviews = async (req, res) => {
         const interviews = result.data.interviews.filter(interview =>
             userInterviews.some(dbInterview => dbInterview.interviewId === interview.interview_id)
         );
+
+        // Combine the data from Ribbon and MongoDB wherever interview id is a match
+        const combinedInterviews = interviews.map(ribbonInterview => {
+            const dbInterview = userInterviews.find(dbInterview => dbInterview.interviewId === ribbonInterview.interview_id);
+            return {
+                ...ribbonInterview,
+                userId: dbInterview.userId,
+                interviewId: dbInterview.interviewId,
+                createdAt: dbInterview.createdAt,
+                // interviewId: dbInterview.interviewId, // Already in ribbonInterview but just in case
+            }
+        });
         
         res.status(200).json({
             message: "Interviews retrieved successfully.",
-            data: interviews,
+            data: combinedInterviews,
         });
     } catch (err) {
         console.error('Error fetching data:', err);
