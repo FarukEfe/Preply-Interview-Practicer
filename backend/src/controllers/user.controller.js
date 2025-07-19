@@ -8,6 +8,13 @@ export const signIn = async (req, res) => {
     try {
         // Input should be linkedin information post oauth
         const { email, password } = req.body;
+
+        // Validate input
+        if (!email || !password) {
+            res.status(400).json({ message: 'Email and password are required.' });
+            return;
+        }
+
         // If signin info not in database, create new user. use linkedin id as user id to check.
         // Instantly generate an index for twelvelabs to be able to submit tasks.
         const result = await User.findOne({ email: email });
@@ -50,7 +57,7 @@ export const signUp = async (req, res) => {
             res.status(400).json({ message: 'Password must be at least 8 characters long.' });
             return;
         }
-        
+
         // Check if user already exists
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
@@ -87,7 +94,13 @@ export const signUp = async (req, res) => {
 
         res.status(201).json({
             message: "User created successfully",
-            user: newUser,
+            user: {
+                _id: newUser._id,
+                username: newUser.username,
+                fullname: newUser.fullname,
+                email: newUser.email,
+                twelveIndexId: newUser.twelveIndexId,
+            },
         });
 
     } catch (err) {

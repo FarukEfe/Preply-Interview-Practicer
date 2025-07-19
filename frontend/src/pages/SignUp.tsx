@@ -70,11 +70,16 @@ const SignUp = () => {
                   if (response) {
                     console.log("Sign up successful:", response);
                     authStore.setState({ authUser: response.data });
+                    console.log(authStore.getState().authUser);
                     // Redirect to dashboard
                     window.location.href = '/dashboard';
                   } else {
                     console.error("Sign up failed");
                   }
+                }).catch(error => {
+                  console.error("Error during sign up:", error);
+                  // Maybe have error feedback instead of this
+                  window.location.href = '/signup'; // Redirect to sign up on error
                 })
               }
             }>
