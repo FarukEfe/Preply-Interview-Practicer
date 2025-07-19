@@ -1,35 +1,55 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Loader } from 'lucide-react';
+// Auth
+import { authStore } from './lib/authStore';
+// Components
+import Navbar from './components/Navbar';
+// Pages
+import Jobs from './pages/jobs/Jobs';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import HomePage from './pages/HomePage';
+import Dashboard from './pages/Dashboard';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  
+  // auth store
+  const authUser = authStore(state => state.authUser);
+
+  const [res, setRes] = useState<any>(null);
+
+  useEffect(() => {
+    // Fetch initial data here
+    console.log('Fetching initial data...');
+    
+  }, [])
+
+  // Debug
+  // useEffect(() => { console.log(res); }, [res])
+
+  if (!res) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+          <Loader className="animate-spin w-12 h-12 text-blue-500" />
+      </div>
+    )
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/jobs" element={(authUser) ? <Jobs /> : <Navigate to="/signin" />} />
+        {/* <Route path="/jobs" element={<Jobs />} /> */}
+        <Route path="/dashboard" element={(authUser) ? <Dashboard /> : <Navigate to="/signin" />} />
+        <Route path="/signin" element={(authUser) ? <Navigate to="/dashboard" /> : <SignIn />} />
+        <Route path="/signup" element={(authUser) ? <Navigate to="/dashboard" /> : <SignUp />} />
+        {/* <Route path='/interviews' element={(authUser) ? <RibbonData /> : <Navigate to="/signin" />} /> */}
+      </Routes>
+    </div>
   )
 }
 
-export default App
+export default App;
