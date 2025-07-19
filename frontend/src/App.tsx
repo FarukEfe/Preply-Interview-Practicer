@@ -4,7 +4,7 @@ import { Loader } from 'lucide-react';
 // Auth
 import { authStore } from './lib/authStore';
 // Components
-import Navbar from './components/Navbar';
+import Navbar from './_component/Navbar';
 // Pages
 import Jobs from './pages/jobs/Jobs';
 import SignIn from './pages/SignIn';
@@ -28,13 +28,13 @@ const App = () => {
   // Debug
   // useEffect(() => { console.log(res); }, [res])
 
-  if (authStore.getState().isSigningIn) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-          <Loader className="animate-spin w-12 h-12 text-blue-500" />
-      </div>
-    )
-  }
+  // if (authStore.getState().isSigningIn) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //         <Loader className="animate-spin w-12 h-12 text-blue-500" />
+  //     </div>
+  //   )
+  // }
 
   return (
     <div>
