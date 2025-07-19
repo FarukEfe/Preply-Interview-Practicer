@@ -25,3 +25,21 @@ export const createTemplate = async (job: JobInterface, userId: string) => {
         return null;
     }
 }
+
+export const getTemplates = async (userId: string) => {
+    try {
+        const response = await backend.get(`/ribbon/flows?userId=${userId}`);
+        if (response.status !== 200) {
+            console.error("Error fetching templates:", response.status);
+            return null;
+        }
+
+        return {
+            message: "Templates fetched successfully",
+            data: response.data
+        };
+    } catch (error) {
+        console.error("Error fetching templates:", error);
+        return null;
+    }
+}
