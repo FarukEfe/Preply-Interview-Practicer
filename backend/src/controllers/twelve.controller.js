@@ -3,8 +3,6 @@ import { client } from '../lib/twelve_client.js';
 // In the mongo Video entity, we'll store the analysis results, twelvelabs video id, and the original video url from ribbon.
 import Analysis from '../models/twelve/analysis.model.js';
 import TwelveTask from '../models/twelve/task.model.js';
-import { evaluateAccuracy } from '../lib/accuracyscore.js';
-import { analyzeVideoMetrics } from '../lib/videometrics.js';
 
 // MARK: INDEX (UNUSED)
 export const createIndex = async (req, res) => {
@@ -110,20 +108,43 @@ export const createTask = async (req, res) => {
 }
 
 
+// MARK: ANALYZE VIDEO
 export const analyzeVideo = async (req, res) => {
-    const { videoUrl, questions_to_transcript_mapping } = req.body;
-    if (!videoUrl || !questions_to_transcript_mapping) {
-        return res.status(400).json({ error: 'Missing videoUrl or questions_to_transcript_mapping' });
-    }
-
     try {
-        // Run both analyses in parallel
-        const [accuracy, metrics] = await Promise.all([
-            evaluateAccuracy(questions_to_transcript_mapping),
-            analyzeVideoMetrics(videoUrl)
-        ]);
-        return res.json({ accuracy, metrics });
+        const { taskId } = req.body;
+
+        const task = await client.task.retrieve(taskId);
+
+        if (task.status !== 'ready' || !task.videoId) {
+            return res.status(400).json({ message: 'Task is not prepared yet.' });
+        }
+
+        // Use task to analyze the video
+        const prompt = "Return a json format with the following key names: confidence, enthusiasm, positivity, and summary. Confidence, enthusiasm, and positivity are going to be a score from 0 to 100 based on the persons attitude in the video. Summary is going to be a list of descriptions of major timestamps in the video."
+        const result = await client.summarize(task.videoId, "summary", prompt, 0.5)
+        if (!result || !result.data) {
+            return res.status(404).json({ message: 'Failed to analyze video, maybe try later.' });
+        }
+        // Find the task object in mongoose with id
+        const twelveTask = await TwelveTask.findOne({ taskId: taskId });
+        
+        // Save video analysis
+        const analysis = new Analysis({
+            taskId: taskId,
+            videoId: task.videoId,
+            videoUrl: twelveTask.videoUrl,
+            userId: twelveTask.userId,
+            analysisResults: result
+        })
+        _ = await analysis.save();
+
+        res.status(200).json({
+            message: 'Video analyzed successfully.',
+            analysis: result,
+        });
+
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        console.error("Error analyzing video:", err);
+        res.status(500).json({ message: 'Failed to analyze video.' });
     }
-};
+}
