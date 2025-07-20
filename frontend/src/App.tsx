@@ -11,7 +11,7 @@ import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import HomePage from './pages/HomePage';
 import Dashboard from './pages/Dashboard';
-import './styles/globals.css'
+import './index.css'
 
 const App = () => {
   
