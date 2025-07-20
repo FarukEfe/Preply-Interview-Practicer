@@ -97,8 +97,8 @@ const Jobs = () => {
         <Tabs defaultValue="static" className="space-y-6">
           <div className="flex justify-between items-center">
             <TabsList className="grid w-fit grid-cols-2">
-              <TabsTrigger value="static">Static Templates</TabsTrigger>
-              <TabsTrigger value="api">API Job Postings</TabsTrigger>
+              <TabsTrigger value="static">Templates</TabsTrigger>
+              <TabsTrigger value="api">Job Postings</TabsTrigger>
             </TabsList>
 
             <div className="flex gap-2">

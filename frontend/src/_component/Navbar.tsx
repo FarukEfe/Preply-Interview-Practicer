@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { authStore } from '../lib/authStore'
 import { Button } from '../components/ui/button'
 
+import { Link } from 'lucide-react'
+
+import logo from '../../public/nailedit.png'
+
 const Navbar = () => {
     const authUser = authStore(state => state.authUser)
     const signOut = authStore(state => state.signOut)
@@ -16,10 +20,14 @@ const Navbar = () => {
     return (
         <nav className="bg-white border-b px-4 py-2 flex justify-between items-center">
             <div
-                className="text-xl font-bold cursor-pointer"
+                className="flex flex-row gap-2 text-xl font-bold cursor-pointer"
                 onClick={() => navigate('/')}
             >
-                Interview Practicer
+                {/* <Link to="/" className="flex items-center space-x-2">
+                    <img src={logo} alt="NailedIt" />
+                    <span className="text-xl font-bold text-gray-900">NailedIt</span>
+                </Link> */}
+                NailedIT
             </div>
             <div className="flex items-center gap-4">
                 {/* Main navigation links */}
@@ -30,9 +38,6 @@ const Navbar = () => {
                     Dashboard
                 </Button>
                 <Button variant="ghost" onClick={() => navigate('/jobs')}>
-                    Jobs
-                </Button>
-                <Button variant="ghost" onClick={() => navigate('/jobs/postings')}>
                     Job Postings
                 </Button>
                 <Button variant="ghost" onClick={() => navigate('/jobs/applications')}>

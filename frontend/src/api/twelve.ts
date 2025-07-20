@@ -40,16 +40,19 @@ export const getTasks = async (userId: string) => {
     }
 }
 
+// Update your analyzeVideo function in twelve.ts
 export const analyzeVideo = async (taskId: string) => {
     try {
-        const response = await backend.post('/twelve/analyze', { taskId } )
-        if (response.status !== 200) {
-            console.error("Error analyzing video:", response.status);
-            return null;
+        const response = await backend.post(`/twelve/analyze`, { taskId });
+        
+        if (response.status === 200) {
+            return response.data;
+        } else {
+            throw new Error(`Analysis failed with status ${response.status}`);
         }
-        return response.data;
-    } catch (err) {
-        console.error("Error analyzing video:", err);
-        return null;
+
+    } catch (error: any) {
+        console.error("Error analyzing video:", error);
+        throw error; // Re-throw to be caught by the caller
     }
 }
