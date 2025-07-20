@@ -24,7 +24,7 @@ const Interview = () => {
     }
 
     fetchSessions();
-  })
+  }, [])
 
   if (!sessions) {
     return (

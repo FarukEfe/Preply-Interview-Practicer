@@ -8,13 +8,15 @@ import { Button } from "../../components/ui/button"
 import { Clock, Play, Trash2, Copy } from "lucide-react"
 import { formatDistanceToNowStrict } from "date-fns"
 import { createTask } from "../../api/twelve"
+import { authStore } from "../../lib/authStore"
 
 // Define the interface for your interview session object
 export interface InterviewSession {
-  interview_data: any | null // Can be null or actual data
   interview_flow_id: string
   interview_id: string // UUID,
-  video_url: string,
+  interview_data: {
+    video_url: string
+  } | null,
   transcript: string,
   status: "incomplete" | "complete"
   userId: string
@@ -37,7 +39,22 @@ export function InterviewSessionItem({ session, onContinue, onDelete, onViewDeta
 
   const handleContinue = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent card click from triggering
-    // createTask(session.)
+    const user = authStore.getState().authUser;
+    if (!session.interview_data || !user) {
+      console.error("No video URL available for this session")
+      return
+    }
+    // console.log(user);
+    createTask(session.interview_data.video_url, user.twelveIndexId, user._id).then(response => {
+      if (response) {
+        console.log("Task created successfully:", response);
+        
+      } else {
+        console.error("Failed to create task for session:", session.interview_id);
+      }
+    }).catch(error => {
+      console.error("Error creating task:", error);
+    })
   }
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -64,15 +81,12 @@ export function InterviewSessionItem({ session, onContinue, onDelete, onViewDeta
     onViewDetails?.(session)
   }
 
-  const getStatusBadgeVariant = (status: InterviewSession["status"]) => {
-    switch (status) {
-      case "incomplete":
-        return "destructive"
-      case "complete":
-        return "secondary"
-      default:
-        return "secondary"
+  const getStatusBadgeVariant = (status: boolean) => {
+    if (status) {
+      return "secondary"
     }
+
+    return "destructive"
   }
 
   return (
@@ -82,7 +96,7 @@ export function InterviewSessionItem({ session, onContinue, onDelete, onViewDeta
             <div className="flex items-center justify-between w-full">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 Interview Flow: {session.interview_flow_id}
-                <Badge variant={getStatusBadgeVariant(session.status)} className="text-xs">
+                <Badge variant={getStatusBadgeVariant(!session.interview_data)} className="text-xs">
                 {session.status.replace(/_/g, " ")}
                 </Badge>
             </CardTitle>
@@ -112,7 +126,7 @@ export function InterviewSessionItem({ session, onContinue, onDelete, onViewDeta
             </div>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" onClick={handleContinue} disabled={session.status === "incomplete"}>
+          <Button size="sm" onClick={handleContinue} disabled={!session.interview_data}>
             <Play className="h-4 w-4 mr-1" />
             Submit For Review
           </Button>

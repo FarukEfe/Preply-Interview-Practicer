@@ -32,15 +32,23 @@ export const createIndex = async (req, res) => {
 export const getTasks = async (req, res) => {
     try {
         // Get user id from query params
-        const { userId } = req.query; // What is req query for?
+        const { userId } = req.query;
 
         // Get all task objects for that user id
+        // console.log(userId);
         const tasks = await TwelveTask.find({ userId: userId });
         // using task id from each object get the task from twelve labs
         const taskDetails = await Promise.all(tasks.map(async (task) => {
+            
             const taskData = await client.task.retrieve(task.taskId);
-            return {
-                ...taskData,
+            
+            return{
+                id: taskData.id,
+                status: taskData.status,
+                videoId: taskData.videoId,
+                createdAt: taskData.createdAt,
+                updatedAt: taskData.updatedAt,
+                indexId: taskData.indexId,
                 videoUrl: task.videoUrl, // Add the video URL from the database
             };
         }));
@@ -60,14 +68,16 @@ export const getTasks = async (req, res) => {
 }
 
 export const createTask = async (req, res) => {
-    const { videoUrl, indexId, userId } = req.body;
 
     try {
+        const { videoUrl, indexId, userId } = req.body;
 
         if (!videoUrl || !indexId || !userId) {
             res.status(400).json({ message: "Missing required fields: videoUrl, indexId, or userId." });
             return;
         }
+
+        console.log(videoUrl, indexId, userId);
         
         const task = await client.task.create({
             indexId: indexId,
@@ -80,7 +90,7 @@ export const createTask = async (req, res) => {
             userId: userId,
             videoUrl: videoUrl,
         });
-        _ = await newTask.save();
+        const _ = await newTask.save();
         
         // Respond to client
         res.status(200).json({
@@ -89,7 +99,7 @@ export const createTask = async (req, res) => {
             videoId: task.videoId,
         });
     } catch (err) {
-        console.log("Failed to create task due to server side error.")
+        console.log("Failed to create task due to server side error.", err)
         res.status(500).json({
             message: "Failed to create task.",
             error: err.message,
