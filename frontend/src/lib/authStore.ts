@@ -7,6 +7,8 @@ export interface AuthState {
     isSigningUp: boolean;
     isCreatingFlow: boolean;
     isCreatingInterview: boolean;
+    isGettingFlow: boolean;
+    isGettingInterview: boolean;
     isUploadingTask: boolean;
     isAnalyzingVideo: boolean;
     isLoadingJobs: boolean;
@@ -27,6 +29,8 @@ export const authStore = create<AuthState>()(
             // Pre-interview
             isCreatingFlow: false,
             isCreatingInterview: false,
+            isGettingFlow: false,
+            isGettingInterview: false,
             // Post-interview
             isUploadingTask: false,
             isAnalyzingVideo: false,

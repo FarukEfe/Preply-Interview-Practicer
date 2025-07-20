@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getJobsFilter, type JobInterface } from '../../api/rapid.ts'; // Assuming you have an API function to fetch jobs
 import { authStore } from '../../lib/authStore.ts';
+import { useNavigate } from 'react-router-dom';
 
 import { Loader } from 'lucide-react';
 import { Button } from "../../components/ui/button"
@@ -19,6 +20,8 @@ const Jobs = () => {
 
   const [data, setData] = useState<any>(null);
   const [job, setJob] = useState<JobInterface | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -64,11 +67,12 @@ const Jobs = () => {
           createTemplate={(job: JobInterface) => {
             // make the backend call to create a job template (including user id to pair with)
             console.log("Creating template for job id:", job.job_id);
-            createTemplate(job, authStore.getState().authUser?.id).then(response => {
+            createTemplate(job, authStore.getState().authUser?._id).then(response => {
               if (response) {
                 console.log("Template created successfully:", response);
                 // Optionally, you can show a success message or update the UI
                 // Show success popup, with button that navigates the user to created flows (from there to create templates)
+                navigate('/dashboard'); // Redirect to dashboard after creating template
               } else {
                 console.error("Failed to create template");
               }

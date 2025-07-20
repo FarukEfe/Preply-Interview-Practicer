@@ -28,6 +28,7 @@ export const createTemplate = async (job: JobInterface, userId: string) => {
 
 export const getTemplates = async (userId: string) => {
     try {
+        console.log("Fetching templates for user:", userId);
         const response = await backend.get(`/ribbon/flows?userId=${userId}`);
         if (response.status !== 200) {
             console.error("Error fetching templates:", response.status);
@@ -40,6 +41,51 @@ export const getTemplates = async (userId: string) => {
         };
     } catch (error) {
         console.error("Error fetching templates:", error);
+        return null;
+    }
+}
+
+export const createInterview = async (flowId: string, userId: string) => {
+    try {
+
+        console.log("Creating interview for flow:", flowId, "and user:", userId);
+
+        if (!flowId || !userId) {
+            console.error("Flow ID or User ID is missing");
+            return null;
+        }
+
+        const body = {
+            interviewId: flowId,
+            userId
+        };
+
+        const response = await backend.post(`/ribbon/createinterview`, body);
+        if (response.status !== 201) {
+            console.error("Error creating interview:", response.status);
+            return null;
+        }
+
+        return {
+            message: "Interview created successfully",
+            data: response.data
+        };
+    } catch (err) {
+        console.error("Error creating interview:", err);
+        return null;
+    }
+}
+
+export const getInterviews = async (userId: string) => {
+    try {
+        const response = await backend.get(`/ribbon/interviews?userId=${userId}`);
+        if (response.status !== 200) {
+            console.error("Error fetching interviews:", response.status);
+            return null;
+        }
+        return response;
+    } catch (err) {
+        console.error("Error fetching interviews:", err);
         return null;
     }
 }

@@ -16,24 +16,41 @@ const options = {
 // MARK: POST
 export const createInterview = async (req, res) => {
 
-    const { interviewId, userId } = req.body;
-
-    const url = 'https://app.ribbon.ai/be-api/v1/interviews';
-
-    const data = {
-        interview_flow_id: interviewId
-    }
-
     try {
+        const { interviewId, userId } = req.body;
+
+        if (!interviewId || !userId) {
+            res.status(400).json({ message: 'Interview ID and User ID are required.' });
+            return;
+        }
+
+        const url = 'https://app.ribbon.ai/be-api/v1/interviews';
+
+        const data = {
+            interview_flow_id: interviewId
+        }
+
         const result = await axios.post(url, data, options);
+
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
             res.status(500).json({ message: 'Failed to create interview. Ribbon call unsuccessful.' });
             return;
         }
-        return res.data;
+
+        const newInterview = new Interview({
+            userId: userId,
+            interviewId: result.data.interview_id,
+            flowId: interviewId, // Store the associated flow ID
+        });
+        const _ = newInterview.save();
+
+        res.status(201).json({
+            message: "Interview created successfully.",
+            data: result.data,
+        });
     } catch (err) {
-        console.error('Error making interview:', err);
+        console.error('Error making interview:', err.message);
         res.status(500).json({ message: 'Failed to create interview.', error: err.message });
         return;
     }
@@ -58,7 +75,6 @@ export const createFlow = async (req, res) => {
     // Inside your createFlow function:
     const questions = await desc_to_questions(description);
 
-
     const data = {
         org_name: oname,
         title: title,
@@ -68,8 +84,9 @@ export const createFlow = async (req, res) => {
         is_video_enabled: true,
     }
     try {
-        console.log("hit me lol")
+        console.log("h1")
         const result = await axios.post(url, data, options);
+        console.log("h2")
         console.log(result.statusText)
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
@@ -97,7 +114,7 @@ export const createFlow = async (req, res) => {
             data: result.data,
         });
     } catch (err) {
-        console.error('Error making interview flow:', err);
+        console.error('Error making interview flow:', err.message);
         res.status(500).json({ message: 'Failed to create interview flow.', error: err.message });
         return;
     }
@@ -175,11 +192,14 @@ export const getInterviews = async (req, res) => {
             res.status(500).json({ message: 'Failed to fetch interviews. Ribbon call unsuccessful.' });
             return;
         }
-        console.log("this happened.")
+
         // Filter interviews in result.data to only include those in userInterviews
         const interviews = result.data.interviews.filter(interview =>
             userInterviews.some(dbInterview => dbInterview.interviewId === interview.interview_id)
         );
+
+        // Debug
+        // console.log(result.data);
 
         // Combine the data from Ribbon and MongoDB wherever interview id is a match
         const combinedInterviews = interviews.map(ribbonInterview => {
@@ -192,7 +212,27 @@ export const getInterviews = async (req, res) => {
                 // interviewId: dbInterview.interviewId, // Already in ribbonInterview but just in case
             }
         });
+
+        // Retrieve flow data for each interview from const flowurl = `https://app.ribbon.ai/be-api/v1/interview-flows/${flowId}`;
+        // Save it in a field called flowData
+        for (const interview of combinedInterviews) {
+            const flowId = interview.interview_flow_id;
+            const flowUrl = `https://app.ribbon.ai/be-api/v1/interview-flows/${flowId}`;
+            try {
+                const flowResult = await axios.get(flowUrl, options);
+                if (flowResult.status === 200) {
+                    interview.flowData = flowResult.data; // Add flow data to interview
+                } else {
+                    console.log(`Failed to fetch flow for interview ${interview.interview_id}. Status code: ${flowResult.status}`);
+                    interview.flowData = null; // Set to null if flow fetch fails
+                }
+            } catch (error) {
+                console.error(`Error fetching flow for interview ${interview.interview_id}:`, error.message);
+                interview.flowData = null; // Set to null if error occurs
+            }
+        }
         
+
         res.status(200).json({
             message: "Interviews retrieved successfully.",
             data: combinedInterviews,
