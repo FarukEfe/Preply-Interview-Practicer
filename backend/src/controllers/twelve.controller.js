@@ -14,13 +14,13 @@ export const createIndex = async (req, res) => {
             name: `${name}`,
             models: [
                 {
-                name: "marengo2.7",
-                options: ["visual", "audio"],
+                    name: "marengo2.7",
+                    options: ["visual", "audio"],
                 },
             ],
             addons: ["thumbnail"],
         });
-        
+
         res.status(200).json({ indexId: newIndex.id, indexName: newIndex.name });
     } catch (err) {
         console.error("Error creating index:", err);
@@ -76,21 +76,19 @@ export const createTask = async (req, res) => {
             res.status(400).json({ message: "Missing required fields: videoUrl, indexId, or userId." });
             return;
         }
-
-        console.log(videoUrl, indexId, userId);
         
         const task = await client.task.create({
             indexId: indexId,
             url: videoUrl,
         })
-        
+
         // Save the task to the database with userid link
         const newTask = new TwelveTask({
             taskId: task.id,
             userId: userId,
             videoUrl: videoUrl,
         });
-        const _ = await newTask.save();
+        _ = await newTask.save();
         
         // Respond to client
         res.status(200).json({
@@ -127,7 +125,7 @@ export const analyzeVideo = async (req, res) => {
         }
         // Find the task object in mongoose with id
         const twelveTask = await TwelveTask.findOne({ taskId: taskId });
-        
+
         // Save video analysis
         const analysis = new Analysis({
             taskId: taskId,

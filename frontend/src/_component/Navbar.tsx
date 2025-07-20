@@ -22,7 +22,6 @@ const Navbar = () => {
                 Interview Practicer
             </div>
             <div className="flex items-center gap-4">
-                {/* Main navigation links */}
                 <Button variant="ghost" onClick={() => navigate('/')}>
                     Home
                 </Button>
@@ -32,14 +31,10 @@ const Navbar = () => {
                 <Button variant="ghost" onClick={() => navigate('/jobs')}>
                     Jobs
                 </Button>
-                <Button variant="ghost" onClick={() => navigate('/jobs/postings')}>
-                    Job Postings
+                <Button variant="ghost" onClick={() => navigate('/feedback')}>
+                    Feedback
                 </Button>
-                <Button variant="ghost" onClick={() => navigate('/jobs/applications')}>
-                    Applications
-                </Button>
-                {/* Add more job-related pages as needed */}
-
+                {/* Add more buttons for other new pages as needed */}
                 {authUser ? (
                     <>
                         <span>Welcome, {authUser.fullname || authUser.username}</span>
