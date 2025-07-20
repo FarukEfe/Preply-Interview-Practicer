@@ -43,6 +43,7 @@ export const createInterview = async (req, res) => {
             interviewId: result.data.interview_id,
             flowId: interviewId, // Store the associated flow ID
         });
+        const _ = newInterview.save();
 
         res.status(201).json({
             message: "Interview created successfully.",
@@ -191,11 +192,14 @@ export const getInterviews = async (req, res) => {
             res.status(500).json({ message: 'Failed to fetch interviews. Ribbon call unsuccessful.' });
             return;
         }
-        console.log("this happened.")
+
         // Filter interviews in result.data to only include those in userInterviews
         const interviews = result.data.interviews.filter(interview =>
             userInterviews.some(dbInterview => dbInterview.interviewId === interview.interview_id)
         );
+
+        // Debug
+        // console.log(result.data);
 
         // Combine the data from Ribbon and MongoDB wherever interview id is a match
         const combinedInterviews = interviews.map(ribbonInterview => {
@@ -208,7 +212,27 @@ export const getInterviews = async (req, res) => {
                 // interviewId: dbInterview.interviewId, // Already in ribbonInterview but just in case
             }
         });
+
+        // Retrieve flow data for each interview from const flowurl = `https://app.ribbon.ai/be-api/v1/interview-flows/${flowId}`;
+        // Save it in a field called flowData
+        for (const interview of combinedInterviews) {
+            const flowId = interview.interview_flow_id;
+            const flowUrl = `https://app.ribbon.ai/be-api/v1/interview-flows/${flowId}`;
+            try {
+                const flowResult = await axios.get(flowUrl, options);
+                if (flowResult.status === 200) {
+                    interview.flowData = flowResult.data; // Add flow data to interview
+                } else {
+                    console.log(`Failed to fetch flow for interview ${interview.interview_id}. Status code: ${flowResult.status}`);
+                    interview.flowData = null; // Set to null if flow fetch fails
+                }
+            } catch (error) {
+                console.error(`Error fetching flow for interview ${interview.interview_id}:`, error.message);
+                interview.flowData = null; // Set to null if error occurs
+            }
+        }
         
+
         res.status(200).json({
             message: "Interviews retrieved successfully.",
             data: combinedInterviews,

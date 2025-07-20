@@ -75,3 +75,17 @@ export const createInterview = async (flowId: string, userId: string) => {
         return null;
     }
 }
+
+export const getInterviews = async (userId: string) => {
+    try {
+        const response = await backend.get(`/ribbon/interviews?userId=${userId}`);
+        if (response.status !== 200) {
+            console.error("Error fetching interviews:", response.status);
+            return null;
+        }
+        return response;
+    } catch (err) {
+        console.error("Error fetching interviews:", err);
+        return null;
+    }
+}

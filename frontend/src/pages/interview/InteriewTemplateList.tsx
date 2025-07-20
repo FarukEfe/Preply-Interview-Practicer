@@ -187,16 +187,12 @@ export function InterviewTemplateList({
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">{title}</h2>
         <div className="flex items-center gap-2">
-          <Button onClick={onCreateNew} size="sm">
-            <Plus className="h-4 w-4 mr-1" />
-            New Template
-          </Button>
           <Badge variant="secondary">{templates.length} templates</Badge>
         </div>
       </div>
 
       {/* Show first 2 templates */}
-      <div className="space-y-3">
+      <div className="flex gap-4 overflow-x-auto">
         {visibleTemplates.map((template) => (
           <InterviewTemplateItem
             key={template.interview_flow_id}
