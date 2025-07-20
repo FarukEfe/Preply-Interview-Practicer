@@ -84,10 +84,8 @@ export const createFlow = async (req, res) => {
         is_video_enabled: true,
     }
     try {
-        console.log("h1")
         const result = await axios.post(url, data, options);
-        console.log("h2")
-        console.log(result.statusText)
+        console.log(result)
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
             res.status(500).json({ message: 'Failed to create interview flow. Ribbon call unsuccessful.' });
@@ -106,7 +104,7 @@ export const createFlow = async (req, res) => {
             flowId: result.data.interview_flow_id,
             interviews: 0, // Will update this number upon interview creation
         });
-        newFlow.save();
+        const _ = await newFlow.save();
 
         // Send json response
         res.status(201).json({
@@ -137,6 +135,7 @@ export const getFlows = async (req, res) => {
 
         // Fetch flows from Ribbon API
         const result = await axios.get(url, options);
+        // console.log(result)
         if (result.status !== 200) {
             console.log("Error occured. Status code:", result.status);
             res.status(500).json({ message: 'Failed to fetch interview flows. Ribbon call unsuccessful.' });
@@ -148,6 +147,7 @@ export const getFlows = async (req, res) => {
             flows.some(dbFlow => dbFlow.flowId === flow.interview_flow_id)
         );
 
+        console.log(userFlows.length);
         const combinedFlows = userFlows.map(ribbonFlow => {
             const dbFlow = flows.find(dbFlow => dbFlow.flowId === ribbonFlow.interview_flow_id);
             return {

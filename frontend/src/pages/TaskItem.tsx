@@ -58,7 +58,7 @@ export function TaskProcessItem({ task, analyzeVideo, onCancel, onRetry, onDelet
   }
 
   return (
-    <Card className={`hover:shadow-lg transition-shadow duration-200 ${(task.status === "ready") ? "cursor-pointer" : "cursor-crosshair"}`} onClick={() => { if (task.status === "ready") handleAnalysis(); }}>
+    <Card className={`hover:shadow-lg transition-shadow duration-200 ${(task.status === "ready") ? "cursor-pointer" : "cursor-default"}`} onClick={() => { if (task.status === "ready") handleAnalysis(); }}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold flex items-center gap-2">

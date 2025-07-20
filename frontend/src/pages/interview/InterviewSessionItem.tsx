@@ -10,6 +10,10 @@ import { formatDistanceToNowStrict } from "date-fns"
 import { createTask } from "../../api/twelve"
 import { authStore } from "../../lib/authStore"
 
+import { useNavigate } from "react-router-dom"
+
+// import videoFile from "../../content/myvideo.mp4"
+
 // Define the interface for your interview session object
 export interface InterviewSession {
   interview_flow_id: string
@@ -37,18 +41,22 @@ interface InterviewSessionItemProps {
 export function InterviewSessionItem({ session, onContinue, onDelete, onViewDetails }: InterviewSessionItemProps) {
   const formattedCreatedAt = formatDistanceToNowStrict(new Date(session.createdAt), { addSuffix: true })
 
+  const navigate = useNavigate();
+
   const handleContinue = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent card click from triggering
     const user = authStore.getState().authUser;
-    if (!session.interview_data || !user) {
-      console.error("No video URL available for this session")
-      return
-    }
-    // console.log(user);
-    createTask(session.interview_data.video_url, user.twelveIndexId, user._id).then(response => {
+    // if (!session.interview_data || !user) {
+    //   console.error("No video URL available for this session")
+    //   return
+    // }
+
+    const video_url = session.interview_data?.video_url || "https://download.ted.com/talks/BreneBrown_2010X-480p.mp4";
+    console.log(video_url);
+    createTask(video_url, user.twelveIndexId, user._id).then(response => {
       if (response) {
         console.log("Task created successfully:", response);
-        
+        navigate('/')
       } else {
         console.error("Failed to create task for session:", session.interview_id);
       }
@@ -126,7 +134,7 @@ export function InterviewSessionItem({ session, onContinue, onDelete, onViewDeta
             </div>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" onClick={handleContinue} disabled={!session.interview_data}>
+          <Button size="sm" onClick={handleContinue}> { /* disabled={!session.interview_data} */}
             <Play className="h-4 w-4 mr-1" />
             Submit For Review
           </Button>

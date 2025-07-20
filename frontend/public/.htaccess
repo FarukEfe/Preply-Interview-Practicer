@@ -1,0 +1,5 @@
+# Force download for MP4 files
+<Files *.mp4>
+    Header set Content-Disposition "attachment"
+    Header set Content-Type "application/octet-stream"
+</Files>

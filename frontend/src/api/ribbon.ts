@@ -10,6 +10,7 @@ export const createTemplate = async (job: JobInterface, userId: string) => {
             description: job.job_description
         }
 
+        console.log(body)
         const response = await backend.post(`/ribbon/createflow?userId=${userId}`, body);
         if (response.status !== 201) {
             console.error("Error creating template:", response.status);
@@ -34,7 +35,6 @@ export const getTemplates = async (userId: string) => {
             console.error("Error fetching templates:", response.status);
             return null;
         }
-
         return {
             message: "Templates fetched successfully",
             data: response.data

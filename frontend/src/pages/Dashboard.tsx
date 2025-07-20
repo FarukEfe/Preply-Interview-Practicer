@@ -23,7 +23,7 @@ const Dashboard = () => {
       try {
         getTemplates(authStore.getState().authUser?._id).then(response => {
           if (response && response.data) {
-            console.log(response.data.data)
+            console.log(response)
             setTemplates(response.data.data)
           } else {
             console.error("Failed to fetch templates")
