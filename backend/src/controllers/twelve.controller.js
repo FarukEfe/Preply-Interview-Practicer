@@ -14,9 +14,13 @@ export const createIndex = async (req, res) => {
             name: `${name}`,
             models: [
                 {
-                name: "marengo2.7",
-                options: ["visual", "audio"],
+                    name: "marengo2.6",  // For video understanding
+                    options: ["visual", "conversation", "text_in_video"]
                 },
+                {
+                    name: "pegasus1",    // For generation/summarization
+                    options: ["visual", "conversation"]
+                }
             ],
             addons: ["thumbnail"],
         });
