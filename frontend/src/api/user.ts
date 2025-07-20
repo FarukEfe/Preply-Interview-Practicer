@@ -13,10 +13,7 @@ export const userSignUp = async (email: string, password: string, fullname: stri
             return null;
         }
 
-        return {
-            message: "User signed up successfully",
-            data: response.data
-        }
+        return response.data;
 
     } catch (err) {
         console.error("Error signing up user:", err);

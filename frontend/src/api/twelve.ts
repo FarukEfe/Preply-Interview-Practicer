@@ -39,3 +39,17 @@ export const getTasks = async (userId: string) => {
         return null;
     }
 }
+
+export const analyzeVideo = async (taskId: string) => {
+    try {
+        const response = await backend.post('/twelve/analyze', { taskId } )
+        if (response.status !== 200) {
+            console.error("Error analyzing video:", response.status);
+            return null;
+        }
+        return response.data;
+    } catch (err) {
+        console.error("Error analyzing video:", err);
+        return null;
+    }
+}

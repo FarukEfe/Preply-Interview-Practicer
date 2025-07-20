@@ -19,7 +19,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchTemplates = async () => {
       authStore.setState({ isGettingFlow: true })
-      console.log(authStore.getState().authUser)
+      // console.log(authStore.getState().authUser)
       try {
         getTemplates(authStore.getState().authUser?._id).then(response => {
           if (response && response.data) {
@@ -74,7 +74,7 @@ const Dashboard = () => {
                 onDelete={(templateId) => console.log('Delete template with ID:', templateId)}
                 onUse={(template) => {
                   authStore.setState({ isCreatingInterview: true });
-                  // console.log(template)
+                  console.log(authStore.getState().authUser)
                   createInterview(template.interview_flow_id, authStore.getState().authUser?._id).then(response => {
                     if (response) {
                       console.log("Interview created successfully:", response);
