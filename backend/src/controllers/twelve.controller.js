@@ -30,6 +30,34 @@ export const createIndex = async (req, res) => {
     }
 }
 
+export const getIndex = async (req, res) => {
+    try {
+        const { indexId } = req.query;
+
+        if (!indexId) {
+            res.status(400).json({ message: 'Index ID is required.' });
+            return;
+        }
+
+        const index = await client.index.retrieve(indexId);
+
+        if (!index) {
+            res.status(404).json({ message: 'Index not found.' });
+            return;
+        }
+
+        
+        res.status(200).json({
+            message: 'Index retrieved successfully.',
+            duration: index.totalDuration,
+            name: index.name,
+        });
+    } catch (err) {
+        console.error("Error retrieving index:", err);
+        res.status(500).json({ message: 'Failed to retrieve index.', error: err.message });
+    }
+}
+
 // MARK: TASK
 export const getTasks = async (req, res) => {
     try {
@@ -74,6 +102,8 @@ export const createTask = async (req, res) => {
     try {
         const { videoUrl, indexId, userId } = req.body;
 
+        console.log(videoUrl)
+
         if (!videoUrl || !indexId || !userId) {
             res.status(400).json({ message: "Missing required fields: videoUrl, indexId, or userId." });
             return;
@@ -109,20 +139,44 @@ export const createTask = async (req, res) => {
     }
 }
 
-
+// MARK: ANALYZE VIDEO
 export const analyzeVideo = async (req, res) => {
-    const { videoUrl, questions_to_transcript_mapping } = req.body;
-    if (!videoUrl || !questions_to_transcript_mapping) {
-        return res.status(400).json({ error: 'Missing videoUrl or questions_to_transcript_mapping' });
-    }
-
     try {
-        // Run both analyses in parallel
-        const [accuracy, metrics] = await Promise.all([
-            evaluateAccuracy(questions_to_transcript_mapping),
-            analyzeVideoMetrics(videoUrl)
-        ]);
-        return res.json({ accuracy, metrics });
+        const { taskId } = req.body;
+
+        const task = await client.task.retrieve(taskId);
+
+        if (task.status !== 'ready' || !task.videoId) {
+            res.status(400).json({ message: 'Task is not prepared yet.' });
+            return;
+        }
+
+        console.log(task);
+        // Use task to analyze the video
+        const prompt = "Return a json format with the following key names: confidence, enthusiasm, positivity, and summary. Confidence, enthusiasm, and positivity are going to be a score from 0 to 100 based on the persons attitude in the video. Summary is going to be a list of descriptions of major timestamps in the video."
+        const result = await client.summarize(task.videoId, "summary", prompt, 0.5)
+        if (!result || !result.data) {
+            res.status(404).json({ message: 'Failed to analyze video, maybe try later.' });
+            return;
+        }
+        // Find the task object in mongoose with id
+        const twelveTask = await TwelveTask.findOne({ taskId: taskId });
+        
+        // Save video analysis
+        const analysis = new Analysis({
+            taskId: taskId,
+            videoId: task.videoId,
+            videoUrl: twelveTask.videoUrl,
+            userId: twelveTask.userId,
+            analysisResults: result
+        })
+        const _ = await analysis.save();
+
+        res.status(200).json({
+            message: 'Video analyzed successfully.',
+            analysis: result,
+        });
+
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
