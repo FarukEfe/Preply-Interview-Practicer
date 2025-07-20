@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 import { authStore } from "../lib/authStore";
-import { getTasks } from "../api/twelve";
+import { analyzeVideo, getTasks } from "../api/twelve";
+import { TaskProcessItem } from "./TaskItem";
 
-interface Task {
+export interface Task {
   createdAt: string;
   id: string;
   indexId: string;
@@ -15,6 +16,7 @@ interface Task {
 const HomePage = () => {
 
   const [tasks, setTasks] = useState<Task[] | null>(null);
+  const [analysis, setAnalysis] = useState<any>(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -38,12 +40,28 @@ const HomePage = () => {
 
   useEffect(() => { console.log(tasks); }, [tasks]);
 
+  useEffect(() => { console.log(analysis), [analysis] })
+
   return (
     <>
-      <div>HomePage</div>
-      <div>
-        PLZ IMPLEMENT KUUL VISUALS!!!
-      </div>
+      {tasks ? (
+        tasks.map((task) => {
+          return <TaskProcessItem task={task} analyzeVideo={() => {
+            console.log("Analyzing video for task:", task.id);
+            // Implement video analysis logic here
+            analyzeVideo(task.id).then(response => {
+              if (response) {
+                console.log("Video analyzed successfully:", response);
+                setAnalysis(response);
+              } else {
+                console.error("Failed to analyze video for task:", task.id);
+              }
+            }).catch(error => {
+              console.error("Error analyzing video:", error);
+            });
+          }} />
+        })
+      ) : null}
     </>
   )
 }

@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { getJobsFilter, type JobInterface } from '../../api/rapid.ts'; // Assuming you have an API function to fetch jobs
-import { authStore } from '../../lib/authStore.ts';
+// Assuming you have an API function to fetch jobs
 import { useNavigate } from 'react-router-dom';
 
 import { Loader } from 'lucide-react';
 import { Button } from "../../components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
 
-import { StaticJobsView } from "./JobsStatic.tsx"
-import { ApiJobsView } from "./JobsAPI.tsx"
-import { JobDetailsModal } from './JobModal.tsx';
-import { createTemplate } from '../../api/ribbon.ts';
+// import { StaticJobsView } from "./JobsStatic.tsx"
+// import { ApiJobsView } from "./JobsAPI.tsx"
+// import { JobDetailsModal } from './JobModal.tsx';
+// import { createTemplate } from '../../api/ribbon.ts';
+
+import { StaticJobsView } from './JobsStatic';
+import { ApiJobsView } from './JobsAPI';
+import { JobDetailsModal } from './JobModal';
+import { createTemplate } from '../../api/ribbon';
+
+import { authStore } from '../../lib/authStore';
+import { getJobsFilter, type JobInterface } from '../../api/rapid';
 
 // Define default values for query filters. Allow user to change, and use the interface provided in rapid.ts
 

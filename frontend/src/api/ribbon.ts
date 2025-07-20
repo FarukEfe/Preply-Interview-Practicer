@@ -50,6 +50,8 @@ export const createInterview = async (flowId: string, userId: string) => {
 
         console.log("Creating interview for flow:", flowId, "and user:", userId);
 
+        console.log(flowId, userId)
+
         if (!flowId || !userId) {
             console.error("Flow ID or User ID is missing");
             return null;
