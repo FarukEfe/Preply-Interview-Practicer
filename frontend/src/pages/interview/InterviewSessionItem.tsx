@@ -7,12 +7,15 @@ import { Badge } from "../../components/ui/badge"
 import { Button } from "../../components/ui/button"
 import { Clock, Play, Trash2, Copy } from "lucide-react"
 import { formatDistanceToNowStrict } from "date-fns"
+import { createTask } from "../../api/twelve"
 
 // Define the interface for your interview session object
 export interface InterviewSession {
   interview_data: any | null // Can be null or actual data
   interview_flow_id: string
-  interview_id: string // UUID
+  interview_id: string // UUID,
+  video_url: string,
+  transcript: string,
   status: "incomplete" | "complete"
   userId: string
   createdAt: string // ISO date string
@@ -34,7 +37,7 @@ export function InterviewSessionItem({ session, onContinue, onDelete, onViewDeta
 
   const handleContinue = (e: React.MouseEvent) => {
     e.stopPropagation() // Prevent card click from triggering
-    onContinue?.(session.interview_id)
+    // createTask(session.)
   }
 
   const handleDelete = (e: React.MouseEvent) => {
